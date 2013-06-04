@@ -1,0 +1,46 @@
+body {
+  background-color: #F8F8F8;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1.2em;
+  margin: 15px;
+}
+
+h1, p {
+  color: #333;
+}
+
+#parent canvas {
+  background-color: #fff;
+  border: 1px solid #000;
+  cursor: pointer;
+}
+
+#parent {
+  display:inline-block;
+}
+
+#stats {
+  width:300px;
+  min-height:200px;
+  display:inline-block;
+  vertical-align:top;
+}
+#stats dl {
+  margin:0;
+  padding:0;
+}
+#stats dl dt {
+  display:inline-block;
+  width:140px;
+  margin:0;
+  padding:0;
+}
+
+#stats dl dd {
+  display:inline-block;
+  margin:0;
+  padding:0;
+  width:140px;
+}

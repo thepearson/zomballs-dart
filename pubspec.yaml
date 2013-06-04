@@ -1,0 +1,9 @@
+name: Zomballs
+description: A sample web game
+dependencies:
+  browser: any
+  vector_math: any
+  game_loop:
+    git: https://github.com/johnmccutchan/game_loop.git
+  asset_pack:
+    git: https://github.com/johnmccutchan/asset_pack.git
