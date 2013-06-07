@@ -59,7 +59,7 @@ $$.World = {"": "Object;entities,zomball_prerender,zomball_dead_prerender,backgr
       t1.beginPath$0(context);
       t1.set$lineWidth(context, 1);
       t2 = this.target_color;
-      t1.set$strokeStyle(context, "#" + t2._hexPair$1($.$div$n(t2.r, 255)) + t2._hexPair$1($.$div$n(t2.g, 255)) + t2._hexPair$1($.$div$n(t2.b, 255)));
+      t1.set$strokeStyle(context, "#" + (t2._hexPair$1($.$div$n(t2.r, 255)) + t2._hexPair$1($.$div$n(t2.g, 255)) + t2._hexPair$1($.$div$n(t2.b, 255))));
       t1.moveTo$2(context, $.get$x$x(this.player.location), $.get$y$x(this.player.location));
       t2 = this.target;
       t2 = t2.get$x(t2);
@@ -916,11 +916,11 @@ $$.Player = {"": "Entity;color,id,size,speed,damage_value,health,name,world,loca
     t1.beginPath$0(context);
     t1.arc$6(context, $.get$x$x(this.location), $.get$y$x(this.location), $.JSNumber_methods.round$0($.$div$n(this.size, 2)), 0, 6.283185307179586, false);
     t2 = this.color;
-    t1.set$fillStyle(context, "#" + t2._hexPair$1($.$div$n(t2.r, 255)) + t2._hexPair$1($.$div$n(t2.g, 255)) + t2._hexPair$1($.$div$n(t2.b, 255)));
+    t1.set$fillStyle(context, "#" + (t2._hexPair$1($.$div$n(t2.r, 255)) + t2._hexPair$1($.$div$n(t2.g, 255)) + t2._hexPair$1($.$div$n(t2.b, 255))));
     t1.fill$0(context);
     t1.set$lineWidth(context, 1);
     t2 = this.color;
-    t1.set$strokeStyle(context, "#" + t2._hexPair$1($.$div$n(t2.r, 255)) + t2._hexPair$1($.$div$n(t2.g, 255)) + t2._hexPair$1($.$div$n(t2.b, 255)));
+    t1.set$strokeStyle(context, "#" + (t2._hexPair$1($.$div$n(t2.r, 255)) + t2._hexPair$1($.$div$n(t2.g, 255)) + t2._hexPair$1($.$div$n(t2.b, 255))));
     t1.stroke$0(context);
     line_x = $.round$0$nx($.$sub$n($.get$x$x(this.location), $.$div$n(this.size, 2)));
     line_y = $.round$0$nx($.$sub$n($.get$y$x(this.location), $.$div$n(this.size, 2) + 5));
@@ -7845,34 +7845,34 @@ $.draw_circle = function(context, $location, color, size) {
   t1.arc$6(context, t2.get$x($location), t2.get$y($location), $.JSNumber_methods.round$0(size / 2), 0, 6.283185307179586, false);
   t2 = color.r;
   if (t2 !== (t2 | 0))
-    return $.draw_circle$bailout(2, context, 0, color, 0, t1, t2);
-  t2 = "#" + color._hexPair$1(t2 / 255);
+    return $.draw_circle$bailout(2, context, 0, color, 0, t2, t1);
+  t2 = color._hexPair$1(t2 / 255);
   t3 = color.g;
   if (t3 !== (t3 | 0))
-    return $.draw_circle$bailout(3, context, 0, color, 0, t1, t2, t3);
+    return $.draw_circle$bailout(3, context, 0, color, 0, t2, t1, t3);
   t3 = t2 + color._hexPair$1(t3 / 255);
   t2 = color.b;
   if (t2 !== (t2 | 0))
-    return $.draw_circle$bailout(4, context, 0, color, 0, t1, t2, t3);
-  t1.set$fillStyle(context, t3 + color._hexPair$1(t2 / 255));
+    return $.draw_circle$bailout(4, context, 0, color, 0, t2, t1, t3);
+  t1.set$fillStyle(context, "#" + (t3 + color._hexPair$1(t2 / 255)));
   t1.fill$0(context);
   t1.set$lineWidth(context, 0);
   t2 = color.r;
   if (t2 !== (t2 | 0))
-    return $.draw_circle$bailout(5, context, 0, color, 0, t1, t2);
-  t2 = "#" + color._hexPair$1(t2 / 255);
+    return $.draw_circle$bailout(5, context, 0, color, 0, t2, t1);
+  t2 = color._hexPair$1(t2 / 255);
   t3 = color.g;
   if (t3 !== (t3 | 0))
-    return $.draw_circle$bailout(6, context, 0, color, 0, t1, t2, t3);
+    return $.draw_circle$bailout(6, context, 0, color, 0, t2, t1, t3);
   t3 = t2 + color._hexPair$1(t3 / 255);
   t2 = color.b;
   if (t2 !== (t2 | 0))
-    return $.draw_circle$bailout(7, context, 0, color, 0, t1, t2, t3);
-  t1.set$strokeStyle(context, t3 + color._hexPair$1(t2 / 255));
+    return $.draw_circle$bailout(7, context, 0, color, 0, t2, t1, t3);
+  t1.set$strokeStyle(context, "#" + (t3 + color._hexPair$1(t2 / 255)));
   t1.stroke$0(context);
 };
 
-$.draw_circle$bailout = function(state0, context, $location, color, size, t1, t2, t3) {
+$.draw_circle$bailout = function(state0, context, $location, color, size, t2, t1, t3) {
   switch (state0) {
     case 0:
     case 1:
@@ -7884,7 +7884,7 @@ $.draw_circle$bailout = function(state0, context, $location, color, size, t1, t2
       t2 = color.r;
     case 2:
       state0 = 0;
-      t2 = "#" + color._hexPair$1($.$div$n(t2, 255));
+      t2 = color._hexPair$1($.$div$n(t2, 255));
       t3 = color.g;
     case 3:
       state0 = 0;
@@ -7892,13 +7892,13 @@ $.draw_circle$bailout = function(state0, context, $location, color, size, t1, t2
       t2 = color.b;
     case 4:
       state0 = 0;
-      t1.set$fillStyle(context, t3 + color._hexPair$1($.$div$n(t2, 255)));
+      t1.set$fillStyle(context, "#" + (t3 + color._hexPair$1($.$div$n(t2, 255))));
       t1.fill$0(context);
       t1.set$lineWidth(context, 0);
       t2 = color.r;
     case 5:
       state0 = 0;
-      t2 = "#" + color._hexPair$1($.$div$n(t2, 255));
+      t2 = color._hexPair$1($.$div$n(t2, 255));
       t3 = color.g;
     case 6:
       state0 = 0;
@@ -7906,7 +7906,7 @@ $.draw_circle$bailout = function(state0, context, $location, color, size, t1, t2
       t2 = color.b;
     case 7:
       state0 = 0;
-      t1.set$strokeStyle(context, t3 + color._hexPair$1($.$div$n(t2, 255)));
+      t1.set$strokeStyle(context, "#" + (t3 + color._hexPair$1($.$div$n(t2, 255))));
       t1.stroke$0(context);
   }
 };
@@ -9893,7 +9893,7 @@ $.C__Random = new $._Random();
 $.EventStreamProvider_keydown = new $.EventStreamProvider("keydown");
 $.LOG_DEBUG = 3;
 $.game_utilize_prerender = true;
-$.game_flip_sights = true;
+$.game_flip_sights = false;
 $.game_stats_update_interval = 1;
 $.game_score_update_interval = 0.5;
 $.game_increase_zomball_interval = 10;
@@ -9902,12 +9902,12 @@ $.player_default_health = 100;
 $.player_size = 50;
 $.bullet_damage_value = 100;
 $.zomball_spawn_offset = 250;
-$.zomball_max_count = 10;
+$.zomball_max_count = 50;
 $.zomball_alert_range = 100;
 $.zomball_walking_change_offset = 400;
 $.zomball_alert_charge_possibility = 50;
 $.zomball_charge_speed = 20;
-$.zomball_speed_min = 10;
+$.zomball_speed_min = 30;
 $.zomball_speed_range = 5;
 $.zomball_size = 20;
 $.zomball_death_time = 5;
