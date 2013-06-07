@@ -41,7 +41,7 @@ $$.State = {"": "Object;name>",
   }
 };
 
-$$.World = {"": "Object;entities,player,player_score,entity_id,target,bullet,target_color",
+$$.World = {"": "Object;entities,zomball_prerender,zomball_dead_prerender,background,player,player_score,entity_id,target,target_color",
   set_target_position$1: function(mouse_pos) {
     var t1;
     if ($.game_flip_sights) {
@@ -94,21 +94,118 @@ $$.World = {"": "Object;entities,player,player_score,entity_id,target,bullet,tar
       $.Primitives_printString(t1);
     return count;
   },
+  spatter$2: function(context, $location) {
+    var t1, x_min, x_max, y_min, y_max, max, max0, loop, max1, t2, one;
+    t1 = $.getInterceptor$x($location);
+    x_min = $.round$0$nx($.$sub$n(t1.get$x($location), $.zomball_blood_splater_size / 2));
+    if (typeof x_min !== "number")
+      return this.spatter$2$bailout(1, context, $location, t1, x_min);
+    x_max = $.round$0$nx($.$add$ns(t1.get$x($location), $.zomball_blood_splater_size / 2));
+    if (typeof x_max !== "number")
+      return this.spatter$2$bailout(2, context, $location, t1, x_min, x_max);
+    y_min = $.round$0$nx($.$sub$n(t1.get$y($location), $.zomball_blood_splater_size / 2));
+    if (typeof y_min !== "number")
+      return this.spatter$2$bailout(3, context, $location, t1, x_min, x_max, y_min);
+    y_max = $.round$0$nx($.$add$ns(t1.get$y($location), $.zomball_blood_splater_size / 2));
+    if (typeof y_max !== "number")
+      return this.spatter$2$bailout(4, context, 0, 0, x_min, x_max, y_min, y_max);
+    for (max = y_max - y_min, max0 = x_max - x_min, loop = 0; loop < $.zomball_blood_splater_size;) {
+      if (max0 < 0)
+        $.throwExpression($.ArgumentError$("negative max: " + $.S(max0)));
+      max1 = max0 > 4294967295 ? 4294967295 : max0;
+      t1 = $.JSNumber_methods.toDouble$0((Math.random() * max1 >>> 0) + x_min);
+      if (max < 0)
+        $.throwExpression($.ArgumentError$("negative max: " + $.S(max)));
+      max1 = max > 4294967295 ? 4294967295 : max;
+      $location = $.Vector2$(t1, $.JSNumber_methods.toDouble$0((Math.random() * max1 >>> 0) + y_min));
+      max1 = $.zomball_blood_splater_cicrle_max - $.zomball_blood_splater_cicrle_min;
+      if (max1 < 0)
+        $.throwExpression($.ArgumentError$("negative max: " + max1));
+      if (max1 > 4294967295)
+        max1 = 4294967295;
+      t1 = Math.random() * max1 >>> 0;
+      t2 = $.zomball_blood_splater_cicrle_min;
+      max1 = 55;
+      one = Math.random() * max1 >>> 0;
+      max1 = 128;
+      Math.random() * max1 >>> 0;
+      $.draw_circle(context, $location, $.Color$(one + 200, 0, 0, $), t1 + t2);
+      ++loop;
+    }
+  },
+  spatter$2$bailout: function(state0, context, $location, t1, x_min, x_max, y_min, y_max) {
+    switch (state0) {
+      case 0:
+        t1 = $.getInterceptor$x($location);
+        x_min = $.round$0$nx($.$sub$n(t1.get$x($location), $.zomball_blood_splater_size / 2));
+      case 1:
+        state0 = 0;
+        x_max = $.round$0$nx($.$add$ns(t1.get$x($location), $.zomball_blood_splater_size / 2));
+      case 2:
+        state0 = 0;
+        y_min = $.round$0$nx($.$sub$n(t1.get$y($location), $.zomball_blood_splater_size / 2));
+      case 3:
+        state0 = 0;
+        y_max = $.round$0$nx($.$add$ns(t1.get$y($location), $.zomball_blood_splater_size / 2));
+      case 4:
+        var t2, loop, max, t3, t4, one;
+        state0 = 0;
+        for (t1 = $.getInterceptor$n(y_max), t2 = $.getInterceptor$n(x_max), loop = 0; loop < $.zomball_blood_splater_size;) {
+          max = t2.$sub(x_max, x_min);
+          t3 = $.getInterceptor$n(max);
+          if (t3.$lt(max, 0))
+            $.throwExpression($.ArgumentError$("negative max: " + $.S(max)));
+          if (t3.$gt(max, 4294967295))
+            max = 4294967295;
+          t3 = Math.random() * max >>> 0;
+          if (typeof x_min !== "number")
+            throw $.iae(x_min);
+          t3 = $.JSNumber_methods.toDouble$0(t3 + x_min);
+          max = t1.$sub(y_max, y_min);
+          t4 = $.getInterceptor$n(max);
+          if (t4.$lt(max, 0))
+            $.throwExpression($.ArgumentError$("negative max: " + $.S(max)));
+          if (t4.$gt(max, 4294967295))
+            max = 4294967295;
+          t4 = Math.random() * max >>> 0;
+          if (typeof y_min !== "number")
+            throw $.iae(y_min);
+          $location = $.Vector2$(t3, $.JSNumber_methods.toDouble$0(t4 + y_min));
+          max = $.zomball_blood_splater_cicrle_max - $.zomball_blood_splater_cicrle_min;
+          if (max < 0)
+            $.throwExpression($.ArgumentError$("negative max: " + max));
+          if (max > 4294967295)
+            max = 4294967295;
+          t3 = Math.random() * max >>> 0;
+          t4 = $.zomball_blood_splater_cicrle_min;
+          max = 55;
+          one = Math.random() * max >>> 0;
+          max = 128;
+          Math.random() * max >>> 0;
+          $.draw_circle(context, $location, $.Color$(one + 200, 0, 0, $), t3 + t4);
+          ++loop;
+        }
+    }
+  },
   render$1: function(canvas) {
-    var t1, context, id, t2;
+    var t1, context, t2, id;
     t1 = $.getInterceptor$x(canvas);
     context = t1.getContext$1(canvas, "2d");
-    $.clearRect$4$x(context, 0, 0, t1.get$width(canvas), t1.get$height(canvas));
+    if (this.background == null) {
+      this.background = $._ElementFactoryProvider_createElement_html("<canvas/>");
+      $.set$width$x(this.background, t1.get$width(canvas));
+      $.set$height$x(this.background, t1.get$height(canvas));
+    }
+    t2 = $.getInterceptor$x(context);
+    t2.clearRect$4(context, 0, 0, t1.get$width(canvas), t1.get$height(canvas));
+    t2.drawImage$3(context, this.background, 0, 0);
     for (t1 = this.entities.get$keys(), t1 = t1.get$iterator(t1); t1.moveNext$0();) {
       id = t1.get$current();
       t2 = this.entities;
-      t2.$index(t2, id).render$1(canvas);
+      t2.$index(t2, id).render$1(context);
     }
     this.draw_target$1(context);
-    this.player.render$1(canvas);
-    t1 = this.bullet;
-    if (t1 != null)
-      t1.render$1(canvas);
+    this.player.render$1(context);
   },
   out_of_range$1: function($location) {
     var t1, x, y, t2;
@@ -163,12 +260,6 @@ $$.World = {"": "Object;entities,player,player_score,entity_id,target,bullet,tar
       t2.$index(t2, id).process$1(gameTime);
     }
     $.Entity.prototype.process$1.call(this.player, gameTime);
-    t1 = this.bullet;
-    if (t1 != null)
-      if (t1.remove)
-        this.bullet = null;
-      else
-        t1.process$1(gameTime);
   },
   within_range$3: function(vector1, vector2, range) {
     var t1;
@@ -194,32 +285,52 @@ $$.World = {"": "Object;entities,player,player_score,entity_id,target,bullet,tar
         return false;
     }
   },
-  get_entities_in_range$2: function(entity, range) {
-    var entities, t1, t2, id, t3, t4;
+  get_entities_in_range$3: function(entity, range, type) {
+    var t1, entities, t2, t3, id, t4, t5;
+    t1 = $ === type;
+    if (t1)
+      type = null;
+    t1 = !t1;
     entities = [];
-    for (t1 = this.entities.get$keys(), t1 = t1.get$iterator(t1), t2 = $.getInterceptor$x(entity); t1.moveNext$0();) {
-      id = t1.get$current();
-      if ($.$eq(t2.get$id(entity), id) !== true) {
-        t3 = t2.get$location(entity);
-        t4 = this.entities;
-        if (this.within_range$3(t3, $.get$location$x(t4.$index(t4, id)), range))
-          entities.push(id);
+    for (t2 = this.entities.get$keys(), t2 = t2.get$iterator(t2), t3 = $.getInterceptor$x(entity); t2.moveNext$0();) {
+      id = t2.get$current();
+      if ($.$eq(t3.get$id(entity), id) !== true) {
+        t4 = t3.get$location(entity);
+        t5 = this.entities;
+        if (this.within_range$3(t4, $.get$location$x(t5.$index(t5, id)), range))
+          if (t1) {
+            t4 = this.entities;
+            if ($.$eq($.get$name$x(t4.$index(t4, id)), type) === true)
+              entities.push(id);
+          } else
+            entities.push(id);
       }
     }
     return entities;
   },
-  get_close_entity$2: function(entity, range) {
-    var t1, id, t2, t3;
-    for (t1 = this.entities.get$keys(), t1 = t1.get$iterator(t1); t1.moveNext$0();) {
-      id = t1.get$current();
-      t2 = entity.id;
-      if (t2 == null ? id != null : t2 !== id) {
-        t2 = entity.location;
-        t3 = this.entities;
-        if (this.within_range$3(t2, $.get$location$x(t3.$index(t3, id)), range)) {
-          t1 = this.entities;
-          return t1.$index(t1, id);
-        }
+  get_close_entity$3: function(entity, range, type) {
+    var t1, t2, id, t3, t4;
+    t1 = $ === type;
+    if (t1)
+      type = null;
+    t1 = !t1;
+    for (t2 = this.entities.get$keys(), t2 = t2.get$iterator(t2); t2.moveNext$0();) {
+      id = t2.get$current();
+      t3 = entity.id;
+      if (t3 == null ? id != null : t3 !== id) {
+        t3 = entity.location;
+        t4 = this.entities;
+        if (this.within_range$3(t3, $.get$location$x(t4.$index(t4, id)), range))
+          if (t1) {
+            t3 = this.entities;
+            if ($.$eq($.get$name$x(t3.$index(t3, id)), type) === true) {
+              t1 = this.entities;
+              return t1.$index(t1, id);
+            }
+          } else {
+            t1 = this.entities;
+            return t1.$index(t1, id);
+          }
       }
     }
     return;
@@ -234,7 +345,7 @@ $$.Entity = {"": "Object;id>,size,speed,damage_value,health@,name>,world,locatio
   remove$0: function($receiver) {
     return this.remove.call$0();
   },
-  render$1: function(canvas) {
+  render$1: function(context) {
   },
   process$1: function(gameTime) {
     this.brain.think$0();
@@ -338,7 +449,7 @@ $$.ZomballStateWalking = {"": "State;zomball,name",
     if (t1)
       this.zomball.remove = true;
     t1 = this.zomball;
-    if (t1.world.get_close_entity$2(t1, t1.size) != null) {
+    if (t1.world.get_close_entity$3(t1, t1.size, "zomball") != null) {
       t1 = this.zomball;
       t1.destination = $.$add$ns($.$mul$n($.$sub$n(t1.destination, t1.location), -1), this.zomball.location);
     }
@@ -454,11 +565,19 @@ $$.ZomballStateEatingGrass = {"": "State;zomball,name",
 
 $$.ZomballStateDead = {"": "State;zomball,dead_color,entry_time,name",
   entry_actions$0: function() {
+    var t1, t2;
     this.zomball.speed = 0;
     this.entry_time = $.DateTime$_now().millisecondsSinceEpoch;
     this.zomball.color = this.dead_color;
-    var t1 = this.zomball;
+    t1 = this.zomball;
     t1.destination = t1.world.player.location;
+    t1 = this.zomball;
+    if (!t1.spatter) {
+      t2 = t1.world;
+      t1 = t1.location;
+      t2.spatter$2($.getContext$1$x(t2.background, "2d"), t1);
+      this.zomball.spatter = true;
+    }
   },
   do_actions$0: function() {
     if ($.$gt$n($.round$0$nx($.$div$n($.$sub$n($.DateTime$_now().millisecondsSinceEpoch, this.entry_time), 1000)), $.zomball_death_time))
@@ -467,7 +586,7 @@ $$.ZomballStateDead = {"": "State;zomball,dead_color,entry_time,name",
   ZomballStateDead$1: function(zomball) {
     this.name = "dead";
     this.zomball = zomball;
-    this.dead_color = $.Color$(128, 90, 0, $);
+    this.dead_color = $.Color$(128, 64, 0, $);
   }
 };
 
@@ -507,23 +626,15 @@ $$.StateMachine = {"": "Object;states,active_state",
 };
 
 $$.Bullet = {"": "Entity;color,id,size,speed,damage_value,health,name,world,location,brain,destination,remove",
-  render$1: function(canvas) {
-    var context, t1, t2;
-    $.Entity.prototype.render$1.call(this, canvas);
-    context = $.getContext$1$x(canvas, "2d");
-    t1 = $.getInterceptor$x(context);
-    t1.beginPath$0(context);
-    t1.arc$6(context, $.get$x$x(this.location), $.get$y$x(this.location), $.JSNumber_methods.round$0($.$div$n(this.size, 2)), 0, 6.283185307179586, false);
-    t2 = this.color;
-    t1.set$fillStyle(context, "#" + t2._hexPair$1($.$div$n(t2.r, 255)) + t2._hexPair$1($.$div$n(t2.g, 255)) + t2._hexPair$1($.$div$n(t2.b, 255)));
-    t1.fill$0(context);
-    t1.stroke$0(context);
+  render$1: function(context) {
+    $.Entity.prototype.render$1.call(this, context);
+    $.draw_circle(context, this.location, this.color, this.size);
   },
   process$1: function(gameTime) {
     var zomball, t1, t2, t3, id, vec_to_destination, distance_to_destination, heading, travel_vector;
     $.Entity.prototype.process$1.call(this, gameTime);
-    zomball = this.world.get_close_entity$2(this, $.zomball_size);
-    if (zomball != null) {
+    zomball = this.world.get_close_entity$3(this, $.zomball_size, "zomball");
+    if (zomball != null && $.$eq(zomball.get$brain().active_state, "dead") !== true) {
       zomball.set$health($.$sub$n(zomball.get$health(), this.damage_value));
       t1 = this.world;
       t2 = t1.player_score;
@@ -532,7 +643,7 @@ $$.Bullet = {"": "Entity;color,id,size,speed,damage_value,health,name,world,loca
         throw $.iae(t3);
       t1.player_score = t2 + t3;
       this.remove = true;
-      for (t1 = $.JSArray_methods.get$iterator(this.world.get_entities_in_range$2(zomball, $.zomball_alert_range)); t1.moveNext$0();) {
+      for (t1 = $.JSArray_methods.get$iterator(this.world.get_entities_in_range$3(zomball, $.zomball_alert_range, "zomball")); t1.moveNext$0();) {
         id = t1.get$current();
         t2 = this.world.entities;
         if ($.$eq(t2.$index(t2, id).get$brain().active_state, "charging") !== true) {
@@ -559,45 +670,59 @@ $$.Bullet = {"": "Entity;color,id,size,speed,damage_value,health,name,world,loca
     this.location = $location;
     this.destination = destination;
     this.size = 2;
-    this.damage_value = 75;
+    this.damage_value = $.bullet_damage_value;
     this.color = $.Color$(0, 0, 0, $);
     this.speed = 1000;
   }
 };
 
-$$.Zomball = {"": "Entity;color,in_sights,in_sights_color,id,size,speed,damage_value,health,name,world,location,brain,destination,remove",
-  render$1: function(canvas) {
-    var context, t1, t2, line_x, line_y, health_bar_length;
-    $.Entity.prototype.render$1.call(this, canvas);
-    context = $.getContext$1$x(canvas, "2d");
-    t1 = $.getInterceptor$x(context);
-    t1.beginPath$0(context);
-    t1.arc$6(context, $.get$x$x(this.location), $.get$y$x(this.location), $.JSNumber_methods.round$0($.$div$n(this.size, 2)), 0, 6.283185307179586, false);
-    if (this.in_sights) {
-      t2 = this.in_sights_color;
-      t1.set$fillStyle(context, "#" + t2._hexPair$1($.$div$n(t2.r, 255)) + t2._hexPair$1($.$div$n(t2.g, 255)) + t2._hexPair$1($.$div$n(t2.b, 255)));
-    } else {
-      t2 = this.color;
-      t1.set$fillStyle(context, "#" + t2._hexPair$1($.$div$n(t2.r, 255)) + t2._hexPair$1($.$div$n(t2.g, 255)) + t2._hexPair$1($.$div$n(t2.b, 255)));
-    }
-    t1.fill$0(context);
-    t1.set$lineWidth(context, 1);
-    t2 = this.color;
-    t1.set$strokeStyle(context, "#" + t2._hexPair$1($.$div$n(t2.r, 255)) + t2._hexPair$1($.$div$n(t2.g, 255)) + t2._hexPair$1($.$div$n(t2.b, 255)));
-    t1.stroke$0(context);
-    line_x = $.round$0$nx($.$sub$n($.get$x$x(this.location), $.$div$n(this.size, 2)));
-    line_y = $.round$0$nx($.$sub$n($.get$y$x(this.location), $.$div$n(this.size, 2) + 3));
-    if ($.$lt$n(this.health, $.player_default_health)) {
-      t1.beginPath$0(context);
-      t1.set$lineWidth(context, 3);
-      t1.set$strokeStyle(context, "red");
-      t1.moveTo$2(context, line_x, line_y);
-      t1.lineTo$2(context, $.$add$ns(line_x, 20), line_y);
-      t1.stroke$0(context);
-      health_bar_length = $.JSNumber_methods.round$0($.$div$n(this.health, 100) * 20);
-    } else
-      health_bar_length = 20;
-    if ($.$gt$n(this.health, 0)) {
+$$.Zomball = {"": "Entity;color,spatter,in_sights_color,id,size,speed,damage_value,health,name,world,location,brain,destination,remove",
+  render$1: function(context) {
+    var t1, t2, t3, line_x, line_y, health_bar_length;
+    $.Entity.prototype.render$1.call(this, context);
+    if ($.game_utilize_prerender)
+      if ($.$eq(this.brain.active_state, "dead") === true) {
+        t1 = this.world;
+        if (t1.zomball_dead_prerender == null) {
+          t1.zomball_dead_prerender = $._ElementFactoryProvider_createElement_html("<canvas/>");
+          $.set$width$x(this.world.zomball_dead_prerender, $.$add$ns(this.size, 1));
+          $.set$height$x(this.world.zomball_dead_prerender, $.$add$ns(this.size, 1));
+          t1 = $.getContext$1$x(this.world.zomball_dead_prerender, "2d");
+          t2 = this.size;
+          t3 = $.getInterceptor$ns(t2);
+          $.draw_circle(t1, $.Vector2$(t3.$add(t2, 1) / 2, t3.$add(t2, 1) / 2), $.Color$(128, 64, 0, $), this.size);
+        }
+        $.drawImage$3$x(context, this.world.zomball_dead_prerender, $.$sub$n($.get$x$x(this.location), $.$div$n(this.size, 2)), $.$sub$n($.get$y$x(this.location), $.$div$n(this.size, 2)));
+      } else {
+        t1 = this.world;
+        if (t1.zomball_prerender == null) {
+          t1.zomball_prerender = $._ElementFactoryProvider_createElement_html("<canvas/>");
+          $.set$width$x(this.world.zomball_prerender, $.$add$ns(this.size, 1));
+          $.set$height$x(this.world.zomball_prerender, $.$add$ns(this.size, 1));
+          t1 = $.getContext$1$x(this.world.zomball_prerender, "2d");
+          t2 = this.size;
+          t3 = $.getInterceptor$ns(t2);
+          $.draw_circle(t1, $.Vector2$(t3.$add(t2, 1) / 2, t3.$add(t2, 1) / 2), this.color, this.size);
+        }
+        $.drawImage$3$x(context, this.world.zomball_prerender, $.$sub$n($.get$x$x(this.location), $.$div$n(this.size, 2)), $.$sub$n($.get$y$x(this.location), $.$div$n(this.size, 2)));
+      }
+    else
+      $.draw_circle(context, this.location, this.color, this.size);
+    if ($.$gt$n(this.health, 10000)) {
+      line_x = $.round$0$nx($.$sub$n($.get$x$x(this.location), $.$div$n(this.size, 2)));
+      line_y = $.round$0$nx($.$sub$n($.get$y$x(this.location), $.$div$n(this.size, 2) + 3));
+      if ($.$lt$n(this.health, $.zomball_default_health)) {
+        t1 = $.getInterceptor$x(context);
+        t1.beginPath$0(context);
+        t1.set$lineWidth(context, 3);
+        t1.set$strokeStyle(context, "red");
+        t1.moveTo$2(context, line_x, line_y);
+        t1.lineTo$2(context, $.$add$ns(line_x, 20), line_y);
+        t1.stroke$0(context);
+        health_bar_length = $.JSNumber_methods.round$0($.$div$n(this.health, 100) * 20);
+      } else
+        health_bar_length = 20;
+      t1 = $.getInterceptor$x(context);
       t1.beginPath$0(context);
       t1.set$lineWidth(context, 3);
       t1.set$strokeStyle(context, "green");
@@ -784,10 +909,9 @@ $$.Zomball = {"": "Entity;color,in_sights,in_sights_color,id,size,speed,damage_v
 };
 
 $$.Player = {"": "Entity;color,id,size,speed,damage_value,health,name,world,location,brain,destination,remove",
-  render$1: function(canvas) {
-    var context, t1, t2, line_x, line_y, health_bar_length;
-    $.Entity.prototype.render$1.call(this, canvas);
-    context = $.getContext$1$x(canvas, "2d");
+  render$1: function(context) {
+    var t1, t2, line_x, line_y, health_bar_length;
+    $.Entity.prototype.render$1.call(this, context);
     t1 = $.getInterceptor$x(context);
     t1.beginPath$0(context);
     t1.arc$6(context, $.get$x$x(this.location), $.get$y$x(this.location), $.JSNumber_methods.round$0($.$div$n(this.size, 2)), 0, 6.283185307179586, false);
@@ -838,55 +962,76 @@ $$.Player = {"": "Entity;color,id,size,speed,damage_value,health,name,world,loca
   }
 };
 
-$$.main_closure = {"": "Closure;",
-  call$2: function(gameLoop, touch) {
-    $.propertyTypeCast(touch, "$isGameLoopTouch").positions;
-  }
-};
-
-$$.main_closure0 = {"": "Closure;box_0,game_1",
+$$.main_closure = {"": "Closure;box_0,game_1,mouse_2",
   call$1: function(gameLoop) {
-    var t1, mouse, t2;
+    var t1, t2, t3, bullet, t4;
     t1 = this.box_0;
     t1.time_elapsed_1 = $.JSNumber_methods.round$0(gameLoop.get$gameTime());
-    mouse = $.propertyTypeCast(gameLoop, "$isGameLoopHtml").get$mouse();
-    if (mouse.pressed$1(0))
-      t1.targeting_0 = true;
-    if (mouse.isDown$1(0) === true && t1.targeting_0)
-      this.game_1.set_target_position$1($.Vector2$($.toDouble$0$n(mouse.get$x(mouse)), $.toDouble$0$n(mouse.get$y(mouse))));
-    if (mouse.released$1(0) && t1.targeting_0) {
-      t1.targeting_0 = false;
-      t1 = this.game_1;
-      t1.bullet = $.Bullet$(t1.player.location, t1.target);
-      t1.bullet.world = t1;
-      t1.target = null;
-    }
+    document.querySelector("#fps").textContent = $.JSNumber_methods.toString$0($.JSDouble_methods.round$0(1 / gameLoop.get$dt()));
+    t2 = this.mouse_2;
+    if (t2.pressed$1(0))
+      if ($.game_flip_sights)
+        t1.targeting_0 = true;
+      else {
+        t3 = this.game_1;
+        t3.set_target_position$1($.Vector2$($.toDouble$0$n(t2.get$x(t2)), $.toDouble$0$n(t2.get$y(t2))));
+        bullet = $.Bullet$(t3.player.location, t3.target);
+        bullet.world = t3;
+        bullet.id = t3.entity_id;
+        bullet.world = t3;
+        t4 = t3.entities;
+        t4.$indexSet(t4, t3.entity_id, bullet);
+        t3.entity_id = t3.entity_id + 1;
+        t3.target = null;
+      }
+    if (t2.isDown$1(0) === true && t1.targeting_0)
+      if ($.game_flip_sights)
+        this.game_1.set_target_position$1($.Vector2$($.toDouble$0$n(t2.get$x(t2)), $.toDouble$0$n(t2.get$y(t2))));
+    if (t2.released$1(0) && t1.targeting_0)
+      if ($.game_flip_sights) {
+        t1.targeting_0 = false;
+        t1 = this.game_1;
+        bullet = $.Bullet$(t1.player.location, t1.target);
+        bullet.world = t1;
+        bullet.id = t1.entity_id;
+        bullet.world = t1;
+        t2 = t1.entities;
+        t2.$indexSet(t2, t1.entity_id, bullet);
+        t1.entity_id = t1.entity_id + 1;
+        t1.target = null;
+      }
     t1 = "Begin update loop: Frame: " + $.S(gameLoop.get$frame()) + ", Dt: " + $.S(gameLoop.get$dt()) + ", GameTime: " + $.S(gameLoop.get$gameTime());
     t2 = $.LOG_DEBUG;
     if ($.debug_level >= t2)
       $.Primitives_printString(t1);
-    this.game_1.process$1(gameLoop.get$dt());
+    t1 = this.game_1;
+    t1.process$1(gameLoop.get$dt());
+    if ($.$le$n(t1.player.health, 0)) {
+      $.stop$0$x(gameLoop);
+      window.alert("You died. Lame...");
+      return;
+    }
   }
 };
 
-$$.main_closure1 = {"": "Closure;game_2",
+$$.main_closure0 = {"": "Closure;game_3",
   call$1: function(gameLoop) {
     var t1, t2;
     t1 = "Begin render loop: Interpolation factor: " + $.S(gameLoop.get$renderInterpolationFactor());
     t2 = $.LOG_DEBUG;
     if ($.debug_level >= t2)
       $.Primitives_printString(t1);
-    this.game_2.render$1(gameLoop.get$element());
+    this.game_3.render$1(gameLoop.get$element());
   }
 };
 
-$$.main_closure2 = {"": "Closure;game_3",
+$$.main_closure1 = {"": "Closure;game_4",
   call$1: function(timer) {
     var t1, zomball, t2, t3;
-    t1 = this.game_3;
+    t1 = this.game_4;
     if ($.JSInt_methods.$lt(t1.count_entities$1("zomball"), $.zomball_max_count)) {
       zomball = $.Zomball$();
-      for (; t2 = t1.get_close_entity$2(zomball, zomball.size), t3 = zomball.id, t2 != null;) {
+      for (; t2 = t1.get_close_entity$3(zomball, zomball.size, "zomball"), t3 = zomball.id, t2 != null;) {
         t2 = "Zomball " + $.S(t3) + " position is being reset.";
         t3 = $.LOG_DEBUG;
         if ($.debug_level >= t3)
@@ -906,22 +1051,22 @@ $$.main_closure2 = {"": "Closure;game_3",
   }
 };
 
-$$.main_closure3 = {"": "Closure;",
+$$.main_closure2 = {"": "Closure;",
   call$1: function(increase_difficulty) {
     $.zomball_max_count = $.$add$ns($.zomball_max_count, $.game_increase_zomball_number);
   }
 };
 
-$$.main_closure4 = {"": "Closure;box_0,game_4",
+$$.main_closure3 = {"": "Closure;box_0,game_5",
   call$1: function(stats_timer) {
     document.querySelector("#time").textContent = $.JSNumber_methods.toString$0(this.box_0.time_elapsed_1);
-    document.querySelector("#count").textContent = $.JSInt_methods.toString$0(this.game_4.count_entities$1("zomball"));
+    document.querySelector("#count").textContent = $.JSInt_methods.toString$0(this.game_5.count_entities$1("zomball"));
   }
 };
 
-$$.main_closure5 = {"": "Closure;game_5",
+$$.main_closure4 = {"": "Closure;game_6",
   call$1: function(score_timer) {
-    document.querySelector("#score").textContent = $.JSNumber_methods.toString$0(this.game_5.player_score);
+    document.querySelector("#score").textContent = $.JSNumber_methods.toString$0(this.game_6.player_score);
   }
 };
 
@@ -2529,6 +2674,9 @@ $$.JSNumber = {"": "num/Interceptor;",
     truncated = receiver < 0 ? Math.ceil(receiver) : Math.floor(receiver);
     return truncated == -0.0 ? 0 : truncated;
   },
+  floor$0: function(receiver) {
+    return this.toInt$0(Math.floor(receiver));
+  },
   round$0: function(receiver) {
     return this.toInt$0(this.roundToDouble$0(receiver));
   },
@@ -3298,10 +3446,6 @@ $$._cancelAndError_closure = {"": "Closure;subscription_0,future_1",
 
 $$._ForwardingStream = {"": "Stream;",
   listen$4$cancelOnError$onDone$onError: function(onData, cancelOnError, onDone, onError) {
-    if (onError == null)
-      onError = $._nullErrorHandler;
-    if (onDone == null)
-      onDone = $._nullDoneHandler;
     return $._ForwardingStreamSubscription$(this, onData, onError, onDone, true === cancelOnError);
   },
   listen$3$onDone$onError: function(onData, onDone, onError) {
@@ -3323,10 +3467,6 @@ $$._BaseStreamSubscription = {"": "Object;",
     return this._onDone.call$0();
   },
   _BaseStreamSubscription$3: function(_onData, _onError, _onDone) {
-    if (this._onError == null)
-      this._onError = $._nullErrorHandler;
-    if (this._onDone == null)
-      this._onDone = $._nullDoneHandler;
   }
 };
 
@@ -5053,11 +5193,11 @@ $$.Point = {"": "Object;x>,y>",
   $mul: function(_, factor) {
     return $.Point$($.$mul$n(this.x, factor), $.$mul$n(this.y, factor));
   },
+  floor$0: function(_) {
+    return $.Point$($.floor$0$nx(this.x), $.floor$0$nx(this.y));
+  },
   round$0: function(_) {
     return $.Point$($.round$0$nx(this.x), $.round$0$nx(this.y));
-  },
-  toInt$0: function(_) {
-    return $.Point$($.toInt$0$nx(this.x), $.toInt$0$nx(this.y));
   },
   $isPoint: true
 };
@@ -5083,14 +5223,11 @@ $$.Rect = {"": "Object;left>,top>,width>,height>",
       t1 = false;
     return t1;
   },
+  floor$0: function(_) {
+    return $.Rect$($.floor$0$nx(this.left), $.floor$0$nx(this.top), $.floor$0$nx(this.width), $.floor$0$nx(this.height));
+  },
   round$0: function(_) {
     return $.Rect$($.round$0$nx(this.left), $.round$0$nx(this.top), $.round$0$nx(this.width), $.round$0$nx(this.height));
-  },
-  toInt$0: function(_) {
-    return $.Rect$($.toInt$0$nx(this.left), $.toInt$0$nx(this.top), $.toInt$0$nx(this.width), $.toInt$0$nx(this.height));
-  },
-  get$topLeft: function(_) {
-    return $.Point$(this.left, this.top);
   },
   $isRect: true,
   $asRect: null
@@ -5146,9 +5283,6 @@ $$._WrappedIterator = {"": "Object;_liblib$_iterator",
 $$._DOMWindowCrossFrame = {"": "Object;_window",
   get$location: function(_) {
     return $._LocationCrossFrame__createSafe(this._window.location);
-  },
-  get$top: function(_) {
-    return $._DOMWindowCrossFrame__createSafe(this._window.top);
   }
 };
 
@@ -5500,7 +5634,7 @@ $$.GameLoopTimer = {"": "Object;gameLoop<,onTimer,_timeToFireRemaining,_timeToFi
 
 $$.GameLoopGamepad = {"": "Object;gameLoop<,buttons,sticks"};
 
-$$.GameLoopHtml = {"": "GameLoop;element<,_frameCounter,_initialized,_interrupt,_previousFrameTime,_frameTime,_resizePending,_nextResize,maxAccumulatedTime,_accumulatedTime,_gameTime,_renderInterpolationFactor,resizeLimit,_pointerLock,_keyboard,_mouse,_gamepad0,_touchSet,_rafId,_touchEvents,_keyboardEvents,_mouseEvents,onRender,onResize,onFullscreenChange,onPointerLockChange,onTouchStart>,onTouchEnd>,updateTimeStep,lib5$GameLoop$maxAccumulatedTime,_timers,onUpdate",
+$$.GameLoopHtml = {"": "GameLoop;element<,_frameCounter,_initialized,_interrupt,_previousFrameTime,_frameTime,_resizePending,_nextResize,maxAccumulatedTime,_accumulatedTime,_gameTime,_renderInterpolationFactor,resizeLimit,_pointerLock,_keyboard,_mouse,_gamepad0,_lastMousePos,_touchSet,_rafId,_touchEvents,_keyboardEvents,_mouseEvents,onRender,onResize,onFullscreenChange,onPointerLockChange,onTouchStart>,onTouchEnd>,updateTimeStep,lib5$GameLoop$maxAccumulatedTime,_timers,onUpdate",
   get$frame: function() {
     return this._frameCounter;
   },
@@ -5522,8 +5656,8 @@ $$.GameLoopHtml = {"": "GameLoop;element<,_frameCounter,_initialized,_interrupt,
   get$mouse: function() {
     return this._mouse;
   },
-  _processInputEvents$0: function() {
-    var t1, t2, keyboardEvent, t3, down, time, $event, canvasX, canvasY, t4, mouseEvent, t5, moveEvent, wheelEvent, mouseX, mouseY, t6, x, t7, y, clampX, withinCanvas, clampY, touchEvent;
+  _processKeyboardEvents$0: function() {
+    var t1, t2, keyboardEvent, t3, down, time, $event;
     for (t1 = this._keyboardEvents, t2 = $.JSArray_methods.get$iterator(t1); t2.moveNext$0();) {
       keyboardEvent = t2.get$current();
       t3 = $.getInterceptor$x(keyboardEvent);
@@ -5533,63 +5667,158 @@ $$.GameLoopHtml = {"": "GameLoop;element<,_frameCounter,_initialized,_interrupt,
       this._keyboard.digitalButtonEvent$1($event);
     }
     $.JSArray_methods.clear$0(t1);
+  },
+  _processMouseEvents$0: function() {
+    var t1, docElem, box, canvasX, canvasY, t2, mouseEvent, t3, moveEvent, wheelEvent, down, time, mouseX, mouseY, t4, x, t5, y, clampX, withinCanvas, t6, clampY, dx, dy, $event;
     t1 = this.get$mouse();
     t1._wheelDx = 0;
     t1._wheelDy = 0;
     t1._dx = 0;
     t1._dy = 0;
-    t1 = this.element;
-    t2 = $.getInterceptor$x(t1);
-    canvasX = $.get$left$x(t2.get$offset(t1));
-    canvasY = $.get$top$x(t2.get$offset(t1));
-    for (t1 = this._mouseEvents, t2 = $.JSArray_methods.get$iterator(t1), t3 = $.getInterceptor$ns(canvasX), t4 = $.getInterceptor$ns(canvasY); t2.moveNext$0();) {
+    docElem = document.documentElement;
+    box = $.getBoundingClientRect$0$x(this.element);
+    t1 = $.getInterceptor$x(box);
+    canvasX = $.floor$0$nx($.$sub$n($.$add$ns(t1.get$left(box), window.pageXOffset), docElem.clientLeft));
+    if (typeof canvasX !== "number")
+      return this._processMouseEvents$0$bailout(1, t1, docElem, box, canvasX);
+    canvasY = $.floor$0$nx($.$sub$n($.$add$ns(t1.get$top(box), window.pageYOffset), docElem.clientTop));
+    if (typeof canvasY !== "number")
+      return this._processMouseEvents$0$bailout(2, 0, 0, 0, canvasX, canvasY);
+    for (t1 = this._mouseEvents, t2 = $.JSArray_methods.get$iterator(t1); t2.moveNext$0();) {
       mouseEvent = t2.get$current();
-      t5 = $.getInterceptor$x(mouseEvent);
-      moveEvent = $.$eq(t5.get$type(mouseEvent), "mousemove");
-      wheelEvent = $.$eq(t5.get$type(mouseEvent), "mousewheel");
-      down = $.$eq(t5.get$type(mouseEvent), "mousedown");
-      time = $.$div$n(t5.get$timeStamp(mouseEvent), 1000);
+      t3 = $.getInterceptor$x(mouseEvent);
+      moveEvent = $.$eq(t3.get$type(mouseEvent), "mousemove");
+      wheelEvent = $.$eq(t3.get$type(mouseEvent), "mousewheel");
+      down = $.$eq(t3.get$type(mouseEvent), "mousedown");
+      time = $.$div$n(t3.get$timeStamp(mouseEvent), 1000);
       if (moveEvent === true) {
-        mouseX = $.get$x$x(t5.get$page(mouseEvent));
-        mouseY = $.get$y$x(t5.get$page(mouseEvent));
-        t6 = $.getInterceptor$n(mouseX);
-        x = t6.$sub(mouseX, canvasX);
-        t7 = $.getInterceptor$n(mouseY);
-        y = t7.$sub(mouseY, canvasY);
-        if (t6.$lt(mouseX, canvasX)) {
+        mouseX = $.get$x$x(t3.get$page(mouseEvent));
+        mouseY = $.get$y$x(t3.get$page(mouseEvent));
+        t4 = $.getInterceptor$n(mouseX);
+        x = t4.$sub(mouseX, canvasX);
+        t5 = $.getInterceptor$n(mouseY);
+        y = t5.$sub(mouseY, canvasY);
+        if (t4.$lt(mouseX, canvasX)) {
           clampX = 0;
           withinCanvas = false;
-        } else if (t6.$gt(mouseX, t3.$add(canvasX, this.get$width(this)))) {
-          clampX = this.get$width(this);
-          withinCanvas = false;
         } else {
-          clampX = x;
-          withinCanvas = true;
+          t6 = this.get$width(this);
+          if (typeof t6 !== "number")
+            throw $.iae(t6);
+          if (t4.$gt(mouseX, canvasX + t6)) {
+            clampX = this.get$width(this);
+            withinCanvas = false;
+          } else {
+            clampX = x;
+            withinCanvas = true;
+          }
         }
-        if (t7.$lt(mouseY, canvasY)) {
+        if (t5.$lt(mouseY, canvasY)) {
           clampY = 0;
           withinCanvas = false;
-        } else if (t7.$gt(mouseY, t4.$add(canvasY, this.get$height(this)))) {
-          clampY = this.get$height(this);
-          withinCanvas = false;
-        } else
-          clampY = y;
-        $event = $.GameLoopMouseEvent$(x, y, t5.get$movement(mouseEvent).x, t5.get$movement(mouseEvent).y, clampX, clampY, withinCanvas, time, this.get$frame());
+        } else {
+          t4 = this.get$height(this);
+          if (typeof t4 !== "number")
+            throw $.iae(t4);
+          if (t5.$gt(mouseY, canvasY + t4)) {
+            clampY = this.get$height(this);
+            withinCanvas = false;
+          } else
+            clampY = y;
+        }
+        dx = $.$sub$n($.get$x$x(t3.get$client(mouseEvent)), $.get$x$x(this._lastMousePos));
+        dy = $.$sub$n($.get$y$x(t3.get$client(mouseEvent)), $.get$y$x(this._lastMousePos));
+        this._lastMousePos = t3.get$client(mouseEvent);
+        $event = $.GameLoopMouseEvent$(x, y, dx, dy, clampX, clampY, withinCanvas, time, this.get$frame());
         this._mouse.gameLoopMouseEvent$1($event);
       } else {
-        t6 = this._mouse;
+        t4 = this._mouse;
         if (wheelEvent === true) {
           $.interceptedTypeCast(mouseEvent, "$isWheelEvent");
-          t5 = $.getInterceptor$x(mouseEvent);
-          t7 = t5.get$deltaX(mouseEvent);
-          t5 = t5.get$deltaY(mouseEvent);
-          t6._wheelDx = t6._wheelDx + t7;
-          t6._wheelDy = t6._wheelDy + t5;
+          t3 = $.getInterceptor$x(mouseEvent);
+          t5 = t3.get$deltaX(mouseEvent);
+          t3 = t3.get$deltaY(mouseEvent);
+          t4._wheelDx = t4._wheelDx + t5;
+          t4._wheelDy = t4._wheelDy + t3;
         } else
-          t6.digitalButtonEvent$1($.DigitalButtonEvent$(t5.get$button(mouseEvent), down, this.get$frame(), time));
+          t4.digitalButtonEvent$1($.DigitalButtonEvent$(t3.get$button(mouseEvent), down, this.get$frame(), time));
       }
     }
     $.JSArray_methods.clear$0(t1);
+  },
+  _processMouseEvents$0$bailout: function(state0, t1, docElem, box, canvasX, canvasY) {
+    switch (state0) {
+      case 0:
+        t1 = this.get$mouse();
+        t1._wheelDx = 0;
+        t1._wheelDy = 0;
+        t1._dx = 0;
+        t1._dy = 0;
+        docElem = document.documentElement;
+        box = $.getBoundingClientRect$0$x(this.element);
+        t1 = $.getInterceptor$x(box);
+        canvasX = $.floor$0$nx($.$sub$n($.$add$ns(t1.get$left(box), window.pageXOffset), docElem.clientLeft));
+      case 1:
+        state0 = 0;
+        canvasY = $.floor$0$nx($.$sub$n($.$add$ns(t1.get$top(box), window.pageYOffset), docElem.clientTop));
+      case 2:
+        var t2, t3, t4, mouseEvent, t5, moveEvent, wheelEvent, down, time, mouseX, mouseY, t6, x, t7, y, clampX, withinCanvas, clampY, dx, dy, $event;
+        state0 = 0;
+        for (t1 = this._mouseEvents, t2 = $.JSArray_methods.get$iterator(t1), t3 = $.getInterceptor$ns(canvasX), t4 = $.getInterceptor$ns(canvasY); t2.moveNext$0();) {
+          mouseEvent = t2.get$current();
+          t5 = $.getInterceptor$x(mouseEvent);
+          moveEvent = $.$eq(t5.get$type(mouseEvent), "mousemove");
+          wheelEvent = $.$eq(t5.get$type(mouseEvent), "mousewheel");
+          down = $.$eq(t5.get$type(mouseEvent), "mousedown");
+          time = $.$div$n(t5.get$timeStamp(mouseEvent), 1000);
+          if (moveEvent === true) {
+            mouseX = $.get$x$x(t5.get$page(mouseEvent));
+            mouseY = $.get$y$x(t5.get$page(mouseEvent));
+            t6 = $.getInterceptor$n(mouseX);
+            x = t6.$sub(mouseX, canvasX);
+            t7 = $.getInterceptor$n(mouseY);
+            y = t7.$sub(mouseY, canvasY);
+            if (t6.$lt(mouseX, canvasX)) {
+              clampX = 0;
+              withinCanvas = false;
+            } else if (t6.$gt(mouseX, t3.$add(canvasX, this.get$width(this)))) {
+              clampX = this.get$width(this);
+              withinCanvas = false;
+            } else {
+              clampX = x;
+              withinCanvas = true;
+            }
+            if (t7.$lt(mouseY, canvasY)) {
+              clampY = 0;
+              withinCanvas = false;
+            } else if (t7.$gt(mouseY, t4.$add(canvasY, this.get$height(this)))) {
+              clampY = this.get$height(this);
+              withinCanvas = false;
+            } else
+              clampY = y;
+            dx = $.$sub$n($.get$x$x(t5.get$client(mouseEvent)), $.get$x$x(this._lastMousePos));
+            dy = $.$sub$n($.get$y$x(t5.get$client(mouseEvent)), $.get$y$x(this._lastMousePos));
+            this._lastMousePos = t5.get$client(mouseEvent);
+            $event = $.GameLoopMouseEvent$(x, y, dx, dy, clampX, clampY, withinCanvas, time, this.get$frame());
+            this._mouse.gameLoopMouseEvent$1($event);
+          } else {
+            t6 = this._mouse;
+            if (wheelEvent === true) {
+              $.interceptedTypeCast(mouseEvent, "$isWheelEvent");
+              t5 = $.getInterceptor$x(mouseEvent);
+              t7 = t5.get$deltaX(mouseEvent);
+              t5 = t5.get$deltaY(mouseEvent);
+              t6._wheelDx = t6._wheelDx + t7;
+              t6._wheelDy = t6._wheelDy + t5;
+            } else
+              t6.digitalButtonEvent$1($.DigitalButtonEvent$(t5.get$button(mouseEvent), down, this.get$frame(), time));
+          }
+        }
+        $.JSArray_methods.clear$0(t1);
+    }
+  },
+  _processTouchEvents$0: function() {
+    var t1, t2, touchEvent, t3;
     for (t1 = this._touchEvents, t2 = $.JSArray_methods.get$iterator(t1); t2.moveNext$0();) {
       touchEvent = t2.get$current();
       t3 = $.getInterceptor$x(touchEvent);
@@ -5614,7 +5843,9 @@ $$.GameLoopHtml = {"": "GameLoop;element<,_frameCounter,_initialized,_interrupt,
     if (this._previousFrameTime == null) {
       this._frameTime = this.get$time();
       this._previousFrameTime = this._frameTime;
-      this._processInputEvents$0();
+      this._processKeyboardEvents$0();
+      this._processMouseEvents$0();
+      this._processTouchEvents$0();
       this._rafId = $.Window_methods.requestAnimationFrame$1(window, this.get$_requestAnimationFrame(this));
       return;
     }
@@ -5636,7 +5867,9 @@ $$.GameLoopHtml = {"": "GameLoop;element<,_frameCounter,_initialized,_interrupt,
     t1 = this.maxAccumulatedTime;
     if (this._accumulatedTime > t1)
       this._accumulatedTime = t1;
-    this._processInputEvents$0();
+    this._processKeyboardEvents$0();
+    this._processMouseEvents$0();
+    this._processTouchEvents$0();
     for (t1 = this.updateTimeStep; this._accumulatedTime >= t1;) {
       this.processTimers$0();
       this._gameTime = this._gameTime + t1;
@@ -5675,7 +5908,9 @@ $$.GameLoopHtml = {"": "GameLoop;element<,_frameCounter,_initialized,_interrupt,
         if (this._previousFrameTime == null) {
           this._frameTime = this.get$time();
           this._previousFrameTime = this._frameTime;
-          this._processInputEvents$0();
+          this._processKeyboardEvents$0();
+          this._processMouseEvents$0();
+          this._processTouchEvents$0();
           this._rafId = $.Window_methods.requestAnimationFrame$1(window, this.get$_requestAnimationFrame(this));
           return;
         }
@@ -5701,7 +5936,9 @@ $$.GameLoopHtml = {"": "GameLoop;element<,_frameCounter,_initialized,_interrupt,
         t1 = this.maxAccumulatedTime;
         if (this._accumulatedTime > t1)
           this._accumulatedTime = t1;
-        this._processInputEvents$0();
+        this._processKeyboardEvents$0();
+        this._processMouseEvents$0();
+        this._processTouchEvents$0();
         for (t1 = this.updateTimeStep; this._accumulatedTime >= t1;) {
           this.processTimers$0();
           this._gameTime = this._gameTime + t1;
@@ -5837,7 +6074,8 @@ $$.GameLoopHtml = {"": "GameLoop;element<,_frameCounter,_initialized,_interrupt,
       $._EventStreamSubscription$(t1._target, t1._eventType, this.get$_fullscreenError(), t1._useCapture);
       t1 = $.HtmlDocument_methods.get$onFullscreenChange(document);
       $._EventStreamSubscription$(t1._target, t1._eventType, this.get$_fullscreenChange(), t1._useCapture);
-      $.Window_methods.get$onTouchStart(window).listen$1(this.get$_touchStartEvent());
+      t1 = $.Window_methods.get$onTouchStart(window);
+      $._EventStreamSubscription$(t1._target, t1._eventType, this.get$_touchStartEvent(), t1._useCapture);
       t1 = $.Window_methods.get$onTouchEnd(window);
       $._EventStreamSubscription$(t1._target, t1._eventType, this.get$_touchEndEvent(), t1._useCapture);
       t1 = $.Window_methods.get$onTouchMove(window);
@@ -5860,6 +6098,14 @@ $$.GameLoopHtml = {"": "GameLoop;element<,_frameCounter,_initialized,_interrupt,
     }
     this._interrupt = false;
     this._rafId = $.Window_methods.requestAnimationFrame$1(window, this.get$_requestAnimationFrame(this));
+  },
+  stop$0: function(_) {
+    var t1 = this._rafId;
+    if (t1 != null) {
+      $.Window_methods.cancelAnimationFrame$1(window, t1);
+      this._rafId = null;
+    }
+    this._interrupt = true;
   },
   onRender$1: function(arg0) {
     return this.onRender.call$1(arg0);
@@ -5885,8 +6131,7 @@ $$.GameLoopHtml = {"": "GameLoop;element<,_frameCounter,_initialized,_interrupt,
     this._gamepad0 = $.GameLoopGamepad$(this);
     this._pointerLock = $.PointerLock$(this);
     this._touchSet = $.GameLoopTouchSet$(this);
-  },
-  $isGameLoopHtml: true
+  }
 };
 
 $$.Keyboard = {"": "DigitalInput;gameLoop,buttons"};
@@ -5951,7 +6196,7 @@ $$._GameLoopTouchEvent = {"": "Object;event>,type>"};
 
 $$.GameLoopTouchPosition = {"": "Object;x>,y>,dx,dy,time,frame<"};
 
-$$.GameLoopTouch = {"": "Object;id>,positions<", $isGameLoopTouch: true};
+$$.GameLoopTouch = {"": "Object;id>,positions<"};
 
 $$.GameLoopTouchSet = {"": "Object;activeTouches<,gameLoop<",
   _liblib2$_start$1: function($event) {
@@ -6294,6 +6539,9 @@ $$.CanvasRenderingContext2D = {"": "CanvasRenderingContext;fillStyle},lineWidth}
   },
   arc$6: function(receiver, x, y, radius, startAngle, endAngle, anticlockwise) {
     receiver.arc(x, y, radius, startAngle, endAngle, anticlockwise);
+  },
+  drawImage$3: function(receiver, source, destX, destY) {
+    return receiver.drawImage(source, destX, destY);
   }
 };
 
@@ -6331,14 +6579,8 @@ $$.CssStyleDeclaration = {"": "Interceptor;length=",
   set$height: function(receiver, value) {
     this.setProperty$3(receiver, "height", value, "");
   },
-  get$left: function(receiver) {
-    return this.getPropertyValue$1(receiver, "left");
-  },
   get$page: function(receiver) {
     return this.getPropertyValue$1(receiver, "page");
-  },
-  get$top: function(receiver) {
-    return this.getPropertyValue$1(receiver, "top");
   },
   get$width: function(receiver) {
     return this.getPropertyValue$1(receiver, "width");
@@ -6433,9 +6675,6 @@ $$.Element = {"": "Node;$$dom_children:children=,id=,innerHtml:innerHTML},tagNam
   get$client: function(receiver) {
     return $.Rect$(receiver.clientLeft, receiver.clientTop, receiver.clientWidth, receiver.clientHeight);
   },
-  get$offset: function(receiver) {
-    return $.Rect$(receiver.offsetLeft, receiver.offsetTop, receiver.offsetWidth, receiver.offsetHeight);
-  },
   getBoundingClientRect$0: function(receiver) {
     return receiver.getBoundingClientRect();
   },
@@ -6454,9 +6693,6 @@ $$.EmbedElement = {"": "Element;height%,name=,type=,width%"};
 $$.ErrorEvent = {"": "Event;"};
 
 $$.Event = {"": "Interceptor;timeStamp=,type=",
-  get$target: function(receiver) {
-    return $._convertNativeToDart_EventTarget(receiver.target);
-  },
   preventDefault$0: function(receiver) {
     return receiver.preventDefault();
   }
@@ -6593,22 +6829,6 @@ $$.ModElement = {"": "Element;"};
 $$.MouseEvent = {"": "UIEvent;button=",
   get$client: function(receiver) {
     return $.Point$(receiver.clientX, receiver.clientY);
-  },
-  get$movement: function(receiver) {
-    return $.Point$(receiver.webkitMovementX, receiver.webkitMovementY);
-  },
-  get$offset: function(receiver) {
-    var target, t1;
-    if (!!receiver.offsetX)
-      return $.Point$(receiver.offsetX, receiver.offsetY);
-    else {
-      target = this.get$target(receiver);
-      if (typeof target !== "object" || target === null || !$.getInterceptor(target).$isElement)
-        throw $.wrapException($.UnsupportedError$("offsetX is only supported on elements"));
-      t1 = this.get$client(receiver);
-      t1 = t1.$sub(t1, $.get$topLeft$x($.getBoundingClientRect$0$x(this.get$target(receiver))));
-      return t1.toInt$0(t1);
-    }
   }
 };
 
@@ -6911,6 +7131,10 @@ $$.Window = {"": "EventTarget;event=,name=",
     this._ensureRequestAnimationFrame$0(receiver);
     return this._liblib$_requestAnimationFrame$1(receiver, callback);
   },
+  cancelAnimationFrame$1: function(receiver, id) {
+    this._ensureRequestAnimationFrame$0(receiver);
+    receiver.cancelAnimationFrame(id);
+  },
   _liblib$_requestAnimationFrame$1: function(receiver, callback) {
     return receiver.requestAnimationFrame($.convertDartClosureToJS(callback, 1));
   },
@@ -6934,14 +7158,14 @@ $$.Window = {"": "EventTarget;event=,name=",
    $this.cancelAnimationFrame = function(id) { clearTimeout(id); }
   })(receiver);
   },
-  get$top: function(receiver) {
-    return $._convertNativeToDart_Window(receiver.top);
-  },
   $$dom_addEventListener$3: function(receiver, type, listener, useCapture) {
     return receiver.addEventListener(type, $.convertDartClosureToJS(listener, 1), useCapture);
   },
   $$dom_removeEventListener$3: function(receiver, type, listener, useCapture) {
     return receiver.removeEventListener(type, $.convertDartClosureToJS(listener, 1), useCapture);
+  },
+  stop$0: function(receiver) {
+    return receiver.stop();
   },
   toString$0: function(receiver) {
     return receiver.toString();
@@ -7019,14 +7243,11 @@ $$._ClientRect = {"": "Interceptor;height=,left=,top=,width=",
       t1 = false;
     return t1;
   },
+  floor$0: function(receiver) {
+    return $.Rect$($.floor$0$nx(receiver.left), $.floor$0$nx(receiver.top), $.floor$0$nx(receiver.width), $.floor$0$nx(receiver.height));
+  },
   round$0: function(receiver) {
     return $.Rect$($.round$0$nx(receiver.left), $.round$0$nx(receiver.top), $.round$0$nx(receiver.width), $.round$0$nx(receiver.height));
-  },
-  toInt$0: function(receiver) {
-    return $.Rect$($.toInt$0$nx(receiver.left), $.toInt$0$nx(receiver.top), $.toInt$0$nx(receiver.width), $.toInt$0$nx(receiver.height));
-  },
-  get$topLeft: function(receiver) {
-    return $.Point$(receiver.left, receiver.top);
   },
   $isRect: true,
   $asRect: null
@@ -7614,6 +7835,82 @@ $$.BoundClosure$i0 = {"": "Closure;self,target,receiver",
 Isolate.$finishClasses($$, $, null);
 $$ = null;
 
+$.draw_circle = function(context, $location, color, size) {
+  var t1, t2, t3;
+  if (size !== (size | 0))
+    return $.draw_circle$bailout(1, context, $location, color, size);
+  t1 = $.getInterceptor$x(context);
+  t1.beginPath$0(context);
+  t2 = $.getInterceptor$x($location);
+  t1.arc$6(context, t2.get$x($location), t2.get$y($location), $.JSNumber_methods.round$0(size / 2), 0, 6.283185307179586, false);
+  t2 = color.r;
+  if (t2 !== (t2 | 0))
+    return $.draw_circle$bailout(2, context, 0, color, 0, t1, t2);
+  t2 = "#" + color._hexPair$1(t2 / 255);
+  t3 = color.g;
+  if (t3 !== (t3 | 0))
+    return $.draw_circle$bailout(3, context, 0, color, 0, t1, t2, t3);
+  t3 = t2 + color._hexPair$1(t3 / 255);
+  t2 = color.b;
+  if (t2 !== (t2 | 0))
+    return $.draw_circle$bailout(4, context, 0, color, 0, t1, t2, t3);
+  t1.set$fillStyle(context, t3 + color._hexPair$1(t2 / 255));
+  t1.fill$0(context);
+  t1.set$lineWidth(context, 0);
+  t2 = color.r;
+  if (t2 !== (t2 | 0))
+    return $.draw_circle$bailout(5, context, 0, color, 0, t1, t2);
+  t2 = "#" + color._hexPair$1(t2 / 255);
+  t3 = color.g;
+  if (t3 !== (t3 | 0))
+    return $.draw_circle$bailout(6, context, 0, color, 0, t1, t2, t3);
+  t3 = t2 + color._hexPair$1(t3 / 255);
+  t2 = color.b;
+  if (t2 !== (t2 | 0))
+    return $.draw_circle$bailout(7, context, 0, color, 0, t1, t2, t3);
+  t1.set$strokeStyle(context, t3 + color._hexPair$1(t2 / 255));
+  t1.stroke$0(context);
+};
+
+$.draw_circle$bailout = function(state0, context, $location, color, size, t1, t2, t3) {
+  switch (state0) {
+    case 0:
+    case 1:
+      state0 = 0;
+      t1 = $.getInterceptor$x(context);
+      t1.beginPath$0(context);
+      t2 = $.getInterceptor$x($location);
+      t1.arc$6(context, t2.get$x($location), t2.get$y($location), $.JSNumber_methods.round$0($.$div$n(size, 2)), 0, 6.283185307179586, false);
+      t2 = color.r;
+    case 2:
+      state0 = 0;
+      t2 = "#" + color._hexPair$1($.$div$n(t2, 255));
+      t3 = color.g;
+    case 3:
+      state0 = 0;
+      t3 = t2 + color._hexPair$1($.$div$n(t3, 255));
+      t2 = color.b;
+    case 4:
+      state0 = 0;
+      t1.set$fillStyle(context, t3 + color._hexPair$1($.$div$n(t2, 255)));
+      t1.fill$0(context);
+      t1.set$lineWidth(context, 0);
+      t2 = color.r;
+    case 5:
+      state0 = 0;
+      t2 = "#" + color._hexPair$1($.$div$n(t2, 255));
+      t3 = color.g;
+    case 6:
+      state0 = 0;
+      t3 = t2 + color._hexPair$1($.$div$n(t3, 255));
+      t2 = color.b;
+    case 7:
+      state0 = 0;
+      t1.set$strokeStyle(context, t3 + color._hexPair$1($.$div$n(t2, 255)));
+      t1.stroke$0(context);
+  }
+};
+
 $.Color$ = function(r, g, b, a) {
   var t1, t2;
   t1 = $ === a;
@@ -7625,7 +7922,7 @@ $.Color$ = function(r, g, b, a) {
 };
 
 $.World$ = function() {
-  var t1 = new $.World(null, null, 0, 0, null, null, null);
+  var t1 = new $.World(null, null, null, null, null, 0, 0, null, null);
   t1.World$0();
   return t1;
 };
@@ -7711,15 +8008,14 @@ $.main = function() {
   game.player = t2;
   gameLoop = $.GameLoopHtml$(canvas);
   gameLoop.get$pointerLock().lockOnClick = false;
-  gameLoop.onTouchStart = new $.main_closure();
-  gameLoop.onUpdate = new $.main_closure0(t1, game);
-  gameLoop.onRender = new $.main_closure1(game);
+  gameLoop.onUpdate = new $.main_closure(t1, game, gameLoop.get$mouse());
+  gameLoop.onRender = new $.main_closure0(game);
   gameLoop.start$0(gameLoop);
   t2 = gameLoop._timers;
-  t2.push($.GameLoopTimer$_internal(gameLoop, $.zomball_spawn_new_zomball_delay, new $.main_closure2(game), true));
-  t2.push($.GameLoopTimer$_internal(gameLoop, $.game_increase_zomball_interval, new $.main_closure3(), true));
-  t2.push($.GameLoopTimer$_internal(gameLoop, $.game_stats_update_interval, new $.main_closure4(t1, game), true));
-  t2.push($.GameLoopTimer$_internal(gameLoop, $.game_score_update_interval, new $.main_closure5(game), true));
+  t2.push($.GameLoopTimer$_internal(gameLoop, $.zomball_spawn_new_zomball_delay, new $.main_closure1(game), true));
+  t2.push($.GameLoopTimer$_internal(gameLoop, $.game_increase_zomball_interval, new $.main_closure2(), true));
+  t2.push($.GameLoopTimer$_internal(gameLoop, $.game_stats_update_interval, new $.main_closure3(t1, game), true));
+  t2.push($.GameLoopTimer$_internal(gameLoop, $.game_score_update_interval, new $.main_closure4(game), true));
 };
 
 $.Arrays_copy = function(src, srcStart, dst, dstStart, count) {
@@ -8550,14 +8846,6 @@ $.convertDartClosureToJS = function(closure, arity) {
   return $function;
 };
 
-$.propertyTypeCast = function(value, property) {
-  var t1;
-  if (value == null || !!value[property])
-    return value;
-  t1 = $.getInterceptor$asx(property);
-  $.throwExpression($.CastErrorImplementation$($.Primitives_objectTypeName(value), t1.substring$2(property, 3, t1.get$length(property))));
-};
-
 $.interceptedTypeCast = function(value, property) {
   var t1;
   if (value != null)
@@ -9326,28 +9614,6 @@ $._WrappedIterator$ = function(_iterator) {
   return new $._WrappedIterator(_iterator);
 };
 
-$._convertNativeToDart_Window = function(win) {
-  return $._DOMWindowCrossFrame__createSafe(win);
-};
-
-$._convertNativeToDart_EventTarget = function(e) {
-  if ("setInterval" in e)
-    return $._DOMWindowCrossFrame__createSafe(e);
-  else
-    return e;
-};
-
-$._DOMWindowCrossFrame$ = function(_window) {
-  return new $._DOMWindowCrossFrame(_window);
-};
-
-$._DOMWindowCrossFrame__createSafe = function(w) {
-  if (w === window)
-    return w;
-  else
-    return $._DOMWindowCrossFrame$(w);
-};
-
 $._LocationCrossFrame$ = function(_location) {
   return new $._LocationCrossFrame(_location);
 };
@@ -9501,7 +9767,7 @@ $.GameLoopGamepad$ = function(gameLoop) {
 };
 
 $.GameLoopHtml$ = function(element) {
-  var t1 = new $.GameLoopHtml(element, 0, false, false, null, 0, false, 0, 0.03, 0, 0, 0, 0.05, null, null, null, null, null, null, $.List_List($), $.List_List($), $.List_List($), null, null, null, null, null, null, 0.015, 0.03, $.List_List($), null);
+  var t1 = new $.GameLoopHtml(element, 0, false, false, null, 0, false, 0, 0.03, 0, 0, 0, 0.05, null, null, null, null, $.Point$(0, 0), null, null, $.List_List($), $.List_List($), $.List_List($), null, null, null, null, null, null, 0.015, 0.03, $.List_List($), null);
   t1.GameLoopHtml$1(element);
   return t1;
 };
@@ -9602,19 +9868,18 @@ $.List_8h5 = Isolate.makeConstantList(["body", "head", "caption", "td", "th", "c
 $.Map_8h6qb = new $.ConstantMap(12, {body: "html", head: "html", caption: "table", td: "tr", th: "tr", colgroup: "table", col: "colgroup", tr: "tbody", tbody: "table", tfoot: "table", thead: "table", track: "audio"}, $.List_8h5);
 $.JSDouble_methods = $.JSDouble.prototype;
 $.NodeList_methods = $.NodeList.prototype;
-$.EventStreamProvider_webkitfullscreenchange = new $.EventStreamProvider("webkitfullscreenchange");
 $.EventStreamProvider_webkitfullscreenerror = new $.EventStreamProvider("webkitfullscreenerror");
+$.EventStreamProvider_webkitfullscreenchange = new $.EventStreamProvider("webkitfullscreenchange");
+$.EventStreamProvider_touchstart = new $.EventStreamProvider("touchstart");
 $.Duration_0 = new $.Duration(0);
 $.Window_methods = $.Window.prototype;
+$.EventStreamProvider_webkitpointerlockchange = new $.EventStreamProvider("webkitpointerlockchange");
 $.Float32List_methods = $.Float32List.prototype;
-$.EventStreamProvider_touchstart = new $.EventStreamProvider("touchstart");
 $.C_NullThrownError = new $.NullThrownError();
 $.JSInt_methods = $.JSInt.prototype;
-$._CustomEventStreamProvider__determineMouseWheelEventType = new $._CustomEventStreamProvider($.Element__determineMouseWheelEventType);
-$.EventStreamProvider_webkitpointerlockchange = new $.EventStreamProvider("webkitpointerlockchange");
+$.EventStreamProvider_click = new $.EventStreamProvider("click");
 $.EventStreamProvider_mousedown = new $.EventStreamProvider("mousedown");
 $._WorkerStub_methods = $._WorkerStub.prototype;
-$.EventStreamProvider_click = new $.EventStreamProvider("click");
 $.EventStreamProvider_touchmove = new $.EventStreamProvider("touchmove");
 $.EventStreamProvider_touchend = new $.EventStreamProvider("touchend");
 $.EventStreamProvider_keyup = new $.EventStreamProvider("keyup");
@@ -9623,32 +9888,38 @@ $.HtmlDocument_methods = $.HtmlDocument.prototype;
 $.JSArray_methods = $.JSArray.prototype;
 $.JSString_methods = $.JSString.prototype;
 $.JSNumber_methods = $.JSNumber.prototype;
+$._CustomEventStreamProvider__determineMouseWheelEventType = new $._CustomEventStreamProvider($.Element__determineMouseWheelEventType);
 $.C__Random = new $._Random();
 $.EventStreamProvider_keydown = new $.EventStreamProvider("keydown");
 $.LOG_DEBUG = 3;
-$.game_flip_sights = false;
+$.game_utilize_prerender = true;
+$.game_flip_sights = true;
 $.game_stats_update_interval = 1;
 $.game_score_update_interval = 0.5;
-$.game_increase_zomball_interval = 5;
-$.game_increase_zomball_number = 2;
+$.game_increase_zomball_interval = 10;
+$.game_increase_zomball_number = 1;
 $.player_default_health = 100;
 $.player_size = 50;
+$.bullet_damage_value = 100;
 $.zomball_spawn_offset = 250;
 $.zomball_max_count = 10;
 $.zomball_alert_range = 100;
 $.zomball_walking_change_offset = 400;
 $.zomball_alert_charge_possibility = 50;
-$.zomball_charge_speed = 50;
-$.zomball_speed_min = 50;
-$.zomball_speed_range = 15;
+$.zomball_charge_speed = 20;
+$.zomball_speed_min = 10;
+$.zomball_speed_range = 5;
 $.zomball_size = 20;
-$.zomball_death_time = 3;
+$.zomball_death_time = 5;
 $.zomball_charge_possibility = 10;
 $.zomball_dest_reach_move_possibility = 5;
-$.zomball_spawn_new_zomball_delay = 0.2;
+$.zomball_spawn_new_zomball_delay = 0.02;
 $.zomball_spawn_restrained = true;
-$.zomball_default_health = 100;
+$.zomball_default_health = 50;
 $.zomball_damage_value = 5;
+$.zomball_blood_splater_size = 25;
+$.zomball_blood_splater_cicrle_min = 1;
+$.zomball_blood_splater_cicrle_max = 10;
 $.debug_level = 0;
 $.Expando__keyCount = 0;
 $.dispatchPropertyName = null;
@@ -9743,14 +10014,17 @@ $.abs$0$n = function(receiver) {
 $.add$1$ax = function(receiver, a0) {
   return $.getInterceptor$ax(receiver).add$1(receiver, a0);
 };
-$.clearRect$4$x = function(receiver, a0, a1, a2, a3) {
-  return $.getInterceptor$x(receiver).clearRect$4(receiver, a0, a1, a2, a3);
-};
 $.contains$2$asx = function(receiver, a0, a1) {
   return $.getInterceptor$asx(receiver).contains$2(receiver, a0, a1);
 };
+$.drawImage$3$x = function(receiver, a0, a1, a2) {
+  return $.getInterceptor$x(receiver).drawImage$3(receiver, a0, a1, a2);
+};
 $.elementAt$1$ax = function(receiver, a0) {
   return $.getInterceptor$ax(receiver).elementAt$1(receiver, a0);
+};
+$.floor$0$nx = function(receiver) {
+  return $.getInterceptor$nx(receiver).floor$0(receiver);
 };
 $.forEach$1$ax = function(receiver, a0) {
   return $.getInterceptor$ax(receiver).forEach$1(receiver, a0);
@@ -9785,9 +10059,6 @@ $.get$id$x = function(receiver) {
 $.get$iterator$ax = function(receiver) {
   return $.getInterceptor$ax(receiver).get$iterator(receiver);
 };
-$.get$left$x = function(receiver) {
-  return $.getInterceptor$x(receiver).get$left(receiver);
-};
 $.get$length$asx = function(receiver) {
   return $.getInterceptor$asx(receiver).get$length(receiver);
 };
@@ -9820,12 +10091,6 @@ $.get$tHead$x = function(receiver) {
 };
 $.get$tagName$x = function(receiver) {
   return $.getInterceptor$x(receiver).get$tagName(receiver);
-};
-$.get$top$x = function(receiver) {
-  return $.getInterceptor$x(receiver).get$top(receiver);
-};
-$.get$topLeft$x = function(receiver) {
-  return $.getInterceptor$x(receiver).get$topLeft(receiver);
 };
 $.get$width$x = function(receiver) {
   return $.getInterceptor$x(receiver).get$width(receiver);
@@ -9869,8 +10134,14 @@ $.requestPointerLock$0$x = function(receiver) {
 $.round$0$nx = function(receiver) {
   return $.getInterceptor$nx(receiver).round$0(receiver);
 };
+$.set$height$x = function(receiver, value) {
+  return $.getInterceptor$x(receiver).set$height(receiver, value);
+};
 $.set$length$asx = function(receiver, value) {
   return $.getInterceptor$asx(receiver).set$length(receiver, value);
+};
+$.set$width$x = function(receiver, value) {
+  return $.getInterceptor$x(receiver).set$width(receiver, value);
 };
 $.setRange$4$ax = function(receiver, a0, a1, a2, a3) {
   return $.getInterceptor$ax(receiver).setRange$4(receiver, a0, a1, a2, a3);
@@ -9878,14 +10149,14 @@ $.setRange$4$ax = function(receiver, a0, a1, a2, a3) {
 $.skip$1$ax = function(receiver, a0) {
   return $.getInterceptor$ax(receiver).skip$1(receiver, a0);
 };
+$.stop$0$x = function(receiver) {
+  return $.getInterceptor$x(receiver).stop$0(receiver);
+};
 $.sublist$1$ax = function(receiver, a0) {
   return $.getInterceptor$ax(receiver).sublist$1(receiver, a0);
 };
 $.toDouble$0$n = function(receiver) {
   return $.getInterceptor$n(receiver).toDouble$0(receiver);
-};
-$.toInt$0$nx = function(receiver) {
-  return $.getInterceptor$nx(receiver).toInt$0(receiver);
 };
 $.toList$0$ax = function(receiver) {
   return $.getInterceptor$ax(receiver).toList$0(receiver);

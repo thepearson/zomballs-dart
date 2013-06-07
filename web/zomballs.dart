@@ -9,36 +9,43 @@ num LOG_INFO = 2;
 num LOG_ERROR = 1;
 
 var game_size = [800, 600];
+var game_utilize_prerender = true;
 var game_flip_sights = false;
 var game_stats_update_interval = 1.0;
 var game_score_update_interval = 0.5;
-var game_increase_zomball_interval = 5.0;
-var game_increase_zomball_number = 2.0;
+var game_increase_zomball_interval = 10.0;
+var game_increase_zomball_number = 1.0;
 
 var player_default_health = 100.0;
 var player_size = 50;
 
+var bullet_damage_value = 100.0;
+
 var zomball_spawn_offset = 250;
-var zomball_max_count = 10;
+var zomball_max_count = 50;
 var zomball_alert_range = 100;
 var zomball_walking_change_offset = 400;
 var zomball_change_direction_possibility = 10;
 var zomball_alert_charge_possibility = 50;
-var zomball_charge_speed = 50;
-var zomball_speed_min = 50;
-var zomball_speed_range = 15;
+var zomball_charge_speed = 20;
+var zomball_speed_min = 30;
+var zomball_speed_range = 5;
 var zomball_size = 20;
-var zomball_death_time = 3;
+var zomball_death_time = 5;
 var zomball_charge_possibility = 10;
 var zomball_eating_grass_possibility = 20;
 var zomball_dest_reach_move_possibility = 5;
-var zomball_spawn_new_zomball_delay = 0.2;
+var zomball_spawn_new_zomball_delay = 0.02;
 var zomball_spawn_restrained = true;
-var zomball_default_health = 100.0;
+var zomball_default_health = 50.0;
 var zomball_damage_value = 5.0;
 
-num debug_level = 0;
+var zomball_blood_splater_size = 25;
+var zomball_blood_splater_circles = 20;
+var zomball_blood_splater_cicrle_min = 1;
+var zomball_blood_splater_cicrle_max = 10;
 
+num debug_level = 0;
 
 /**
  * Helper function to output debug messages
@@ -49,6 +56,18 @@ void dbg(String message, [num level = 3]) {
   }
 }
 
+/**
+ * Renders a circle
+ */
+void draw_circle(CanvasRenderingContext2D context, Vector2 location, Color color, num size) {
+  context.beginPath();
+  context.arc(location.x, location.y, (size/2).round(), 0, 2 * Math.PI, false);
+  context.fillStyle = color.get_hex();
+  context.fill();
+  context.lineWidth = 0;
+  context.strokeStyle = color.get_hex();
+  context.stroke();
+}
 
 /**
  * Specify color
@@ -65,6 +84,10 @@ class Color {
     } else {
       this.a = 1.0;
     }
+  }
+
+  int get_int() {
+    return int.parse('0x${this.hexColor()}');
   }
 
   List get_rgb() {
@@ -102,7 +125,12 @@ class Color {
   }
 
   String get_hex() {
-    return '#${_hexPair(r/255)}${_hexPair(g/255)}${_hexPair(b/255)}';
+    String hex = hexColor();
+    return '#${hex}';
+  }
+
+  String hexColor() {
+    return '${_hexPair(r/255)}${_hexPair(g/255)}${_hexPair(b/255)}';
   }
 
   String _hexPair(double color) {
@@ -132,11 +160,16 @@ class State {
 
 class World {
   Map<num,Entity> entities;
+
+  CanvasElement zomball_prerender;
+  CanvasElement zomball_dead_prerender;
+  CanvasElement background;
+
   Player player;
   num player_score = 0;
   num entity_id = 0;
   Vector2 target;
-  Bullet bullet;
+  //Bullet bullet;
   Color target_color;
 
   World() {
@@ -175,8 +208,10 @@ class World {
   }
 
   void fire_bullet() {
-    this.bullet = new Bullet(this.player.location, this.target);
-    this.bullet.world = this;
+    Bullet bullet = new Bullet(this.player.location, this.target);
+    bullet.world = this;
+
+    this.add_entity(bullet);
     this.target = null;
   }
 
@@ -187,10 +222,6 @@ class World {
       context.strokeStyle = this.target_color.get_hex();
       context.moveTo(this.player.location.x, this.player.location.y);
       context.lineTo(this.target.x, this.target.y);
-
-      //context.arc(this.target.x, this.target.y, 2, 0, 2 * Math.PI, false);
-      //context.lineWidth = 2;
-      //context.strokeStyle = "red";
       context.stroke();
     }
   }
@@ -215,20 +246,52 @@ class World {
     dbg("Entity ${id} removed.", LOG_DEBUG);
   }
 
+  void spatter(CanvasRenderingContext2D context, Vector2 location) {
+    int loop = 0;
+
+    int x_min = (location.x-(zomball_blood_splater_size/2)).round();
+    int x_max = (location.x+(zomball_blood_splater_size/2)).round();
+
+    int y_min = (location.y-(zomball_blood_splater_size/2)).round();
+    int y_max = (location.y+(zomball_blood_splater_size/2)).round();;
+
+    var rand = new Math.Random();
+    while (loop < zomball_blood_splater_size) {
+      Vector2 location = new Vector2((rand.nextInt(x_max-x_min)+x_min).toDouble(), (rand.nextInt(y_max-y_min)+y_min).toDouble());
+      num size = rand.nextInt(zomball_blood_splater_cicrle_max-zomball_blood_splater_cicrle_min)+zomball_blood_splater_cicrle_min;
+      num one = rand.nextInt(55);
+      num two = rand.nextInt(128);
+      Color color = new Color(one+200, 0, 0);
+      draw_circle(context, location, color, size);
+      loop += 1;
+    }
+  }
+
+
+  void draw_spatter(Vector2 location) {
+    CanvasRenderingContext2D bg_context = this.background.getContext("2d");
+    this.spatter(bg_context, location);
+  }
+
+
   void render(canvas) {
     CanvasRenderingContext2D context = canvas.getContext("2d");
+
+    // build background
+    if (this.background == null) {
+      this.background = new Element.html('<canvas/>');
+      this.background.width = canvas.width;
+      this.background.height = canvas.height;
+    }
     context.clearRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(this.background, 0, 0);
 
     for (num id in this.entities.keys) {
-      this.entities[id].render(canvas);
+      this.entities[id].render(context);
     }
     // draw target if any
     this.draw_target(context);
-    this.player.render(canvas);
-
-    if (this.bullet != null) {
-      this.bullet.render(canvas);
-    }
+    this.player.render(context);
   }
 
   bool out_of_range(Vector2 location) {
@@ -261,13 +324,6 @@ class World {
       this.entities[id].process(gameTime);
     }
     this.player.process(gameTime);
-    if (this.bullet != null) {
-      if (this.bullet.remove == true) {
-        this.bullet = null;
-      } else {
-        this.bullet.process(gameTime);
-      }
-    }
   }
 
   bool within_range(Vector2 vector1, Vector2 vector2, num range) {
@@ -278,28 +334,37 @@ class World {
     return false;
   }
 
-  List get_entities_in_range(Entity entity, num range) {
+  List get_entities_in_range(Entity entity, num range, [String type]) {
     List entities = [];
     for (num id in this.entities.keys) {
       if (entity.id != id) {
         if (this.within_range(entity.location, this.entities[id].location, range)) {
-          entities.add(id);
+          if (?type) {
+            if (this.entities[id].name == type) {
+              entities.add(id);
+            }
+          } else {
+            entities.add(id);
+          }
         }
       }
     }
     return entities;
   }
 
-  Entity get_close_entity(Entity entity, num range) {
+  Entity get_close_entity(Entity entity, num range, [String type]) {
     for (num id in this.entities.keys) {
-      //if (this.entities[id].name == entity.name) {
-        // we only care if it isn't the current entity
       if (entity.id != id) {
         if (this.within_range(entity.location, this.entities[id].location, range)) {
-          return this.entities[id];
+          if (?type) {
+            if (this.entities[id].name == type) {
+              return this.entities[id];
+            }
+          } else {
+            return this.entities[id];
+          }
         }
       }
-      //}
     }
     return null;
   }
@@ -324,7 +389,7 @@ class Entity {
     this.brain = new StateMachine();
   }
 
-  void render(CanvasElement canvas) {
+  void render(CanvasRenderingContext2D context) {
 
   }
 
@@ -409,7 +474,7 @@ class ZomballStateWalking extends State {
       this.zomball.remove = true;
     }
 
-    if (this.zomball.world.get_close_entity(this.zomball, this.zomball.size) != null) {
+    if (this.zomball.world.get_close_entity(this.zomball, this.zomball.size, 'zomball') != null) {
       // reverse the destination
       this.zomball.destination = ((this.zomball.destination-this.zomball.location)*-1.0)+this.zomball.location;
     }
@@ -543,7 +608,7 @@ class ZomballStateDead extends State {
   ZomballStateDead(Zomball zomball) {
     this.name = "dead";
     this.zomball = zomball;
-    this.dead_color = new Color(128, 90, 0); //brown
+    this.dead_color = new Color(128, 64, 0); //brown
   }
 
   void entry_actions() {
@@ -554,6 +619,12 @@ class ZomballStateDead extends State {
 
     // set destination as the player
     this.zomball.destination = this.zomball.world.player.location;
+
+    // spatter
+    if (this.zomball.spatter == false) {
+      this.zomball.world.draw_spatter(this.zomball.location);
+      this.zomball.spatter = true;
+    }
   }
 
   void do_actions() {
@@ -638,7 +709,7 @@ class Bullet extends Entity {
     this.location = location;
     this.destination = destination;
     this.size = 2;
-    this.damage_value = 75.0;
+    this.damage_value = bullet_damage_value;
     this.color = new Color(0, 0, 0);
     this.speed = 1000;
   }
@@ -646,14 +717,9 @@ class Bullet extends Entity {
   /**
    * Render the zomball
    */
-  void render(CanvasElement canvas) {
-    super.render(canvas);
-    CanvasRenderingContext2D context = canvas.getContext("2d");
-    context.beginPath();
-    context.arc(this.location.x, this.location.y, (this.size/2).round(), 0, 2 * Math.PI, false);
-    context.fillStyle = this.color.get_hex();
-    context.fill();
-    context.stroke();
+  void render(CanvasRenderingContext2D context) {
+    super.render(context);
+    draw_circle(context, this.location, this.color, this.size);
   }
 
   /**
@@ -662,8 +728,8 @@ class Bullet extends Entity {
   void process(double gameTime) {
     super.process(gameTime);
 
-    Entity zomball = this.world.get_close_entity(this, zomball_size);
-    if (zomball != null) {
+    Entity zomball = this.world.get_close_entity(this, zomball_size, 'zomball');
+    if (zomball != null && zomball.brain.active_state != 'dead') {
       // decrease zomball health
       zomball.health -= this.damage_value;
       this.world.player_score += this.damage_value;
@@ -672,7 +738,7 @@ class Bullet extends Entity {
       this.remove = true;
 
       // lets set others in range to alert, but only of they aren't charging
-      List in_range = this.world.get_entities_in_range(zomball, zomball_alert_range);
+      List in_range = this.world.get_entities_in_range(zomball, zomball_alert_range, 'zomball');
       for (var id in in_range) {
         if (this.world.entities[id].brain.active_state != "charging") {
           this.world.entities[id].brain.set_state("alerted");
@@ -703,7 +769,7 @@ class Bullet extends Entity {
 
 class Zomball extends Entity {
   Color color;
-  bool in_sights = false;
+  bool spatter = false;
   Color in_sights_color = new Color(255, 128, 0);
 
   Zomball() : super("zomball") {
@@ -726,42 +792,62 @@ class Zomball extends Entity {
   /**
    * Render the zomball
    */
-  void render(CanvasElement canvas) {
-    super.render(canvas);
-    CanvasRenderingContext2D context = canvas.getContext("2d");
-    context.beginPath();
-    context.arc(this.location.x, this.location.y, (this.size/2).round(), 0, 2 * Math.PI, false);
-    if (this.in_sights) {
-      context.fillStyle = in_sights_color.get_hex();
+  void render(CanvasRenderingContext2D context) {
+    super.render(context);
+
+    // if we are using pre-rendering contexts
+    if (game_utilize_prerender == true) {
+      var canvas_offset = 1;
+      if (this.brain.active_state == 'dead') {
+        // if this is the first render, then we need to render
+        if (this.world.zomball_dead_prerender == null) {
+          this.world.zomball_dead_prerender = new Element.html('<canvas/>');
+          this.world.zomball_dead_prerender.width = this.size+canvas_offset;
+          this.world.zomball_dead_prerender.height = this.size+canvas_offset;
+          draw_circle(this.world.zomball_dead_prerender.getContext("2d"), new Vector2(((this.size+canvas_offset)/2), ((this.size+canvas_offset)/2)), new Color(128, 64, 0), this.size);
+        }
+
+        // render
+        context.drawImage(this.world.zomball_dead_prerender, (this.location.x-(this.size/2)), (this.location.y-(this.size/2)));
+      } else {
+        // if this is the first render, then we need to render
+        if (this.world.zomball_prerender == null) {
+          this.world.zomball_prerender = new Element.html('<canvas/>');
+          this.world.zomball_prerender.width = this.size+canvas_offset;
+          this.world.zomball_prerender.height = this.size+canvas_offset;
+          draw_circle(this.world.zomball_prerender.getContext("2d"), new Vector2(((this.size+canvas_offset)/2), ((this.size+canvas_offset)/2)), this.color, this.size);
+        }
+
+        // render
+        context.drawImage(this.world.zomball_prerender, (this.location.x-(this.size/2)), (this.location.y-(this.size/2)));
+      }
     } else {
-      context.fillStyle = this.color.get_hex();
-    }
-    context.fill();
-    context.lineWidth = 1;
-    context.strokeStyle = this.color.get_hex();
-    context.stroke();
-
-    var health_bar_length = 20;
-    var health_bar_width = 3;
-    var health_bar_empty_color = 'red';
-    var health_bar_full_color = 'green';
-
-    var line_x = (this.location.x-(this.size/2)).round();
-    var line_y = (this.location.y-((this.size/2)+health_bar_width)).round();
-
-    // if player health is less than default health
-    if (this.health < player_default_health) {
-      context.beginPath();
-      context.lineWidth = health_bar_width;
-      context.strokeStyle = health_bar_empty_color;
-      context.moveTo(line_x, line_y);
-      context.lineTo(line_x+health_bar_length, line_y);
-      context.stroke();
-
-      health_bar_length = ((this.health/100)*health_bar_length).round();
+      draw_circle(context, this.location, this.color, this.size);
     }
 
-    if (this.health > 0) {
+    if (this.health > 10000) {
+
+      var health_bar_length = 20;
+      var health_bar_width = 3;
+      var health_bar_empty_color = 'red';
+      var health_bar_full_color = 'green';
+
+      var line_x = (this.location.x-(this.size/2)).round();
+      var line_y = (this.location.y-((this.size/2)+health_bar_width)).round();
+
+      // if player health is less than default health
+      if (this.health < zomball_default_health) {
+        context.beginPath();
+        context.lineWidth = health_bar_width;
+        context.strokeStyle = health_bar_empty_color;
+        context.moveTo(line_x, line_y);
+        context.lineTo(line_x+health_bar_length, line_y);
+        context.stroke();
+
+        health_bar_length = ((this.health/100)*health_bar_length).round();
+      }
+
+
       context.beginPath();
       context.lineWidth = health_bar_width;
       context.strokeStyle = health_bar_full_color;
@@ -857,9 +943,9 @@ class Player extends Entity {
   /**
    * Render the zomball
    */
-  void render(CanvasElement canvas) {
-    super.render(canvas);
-    CanvasRenderingContext2D context = canvas.getContext("2d");
+  void render(CanvasRenderingContext2D context) {
+    super.render(context);
+
     context.beginPath();
     context.arc(this.location.x, this.location.y, (this.size/2).round(), 0, 2 * Math.PI, false);
     context.fillStyle = this.color.get_hex();
@@ -907,6 +993,11 @@ class Player extends Entity {
 }
 
 
+void reset(World world) {
+
+}
+
+
 
 void main() {
   /**
@@ -916,6 +1007,8 @@ void main() {
   var targeting = false;
   var time_elapsed = 0;
   var zomball_count = 0;
+  var frames_second = 0;
+
   var parent = query("#parent");
   var canvas = new Element.html('<canvas/>');
   canvas.width = game_size[0];
@@ -930,39 +1023,51 @@ void main() {
 
   GameLoopHtml gameLoop = new GameLoopHtml(canvas);
   gameLoop.pointerLock.lockOnClick = false;
-  //gameLoop.enableFullscreen(true);
+  Mouse mouse = (gameLoop as GameLoopHtml).mouse;
 
-
-  gameLoop.onTouchStart = ((gameLoop, touch) {
-    var positions = (touch as GameLoopTouch).positions;
-  });
 
   /**
    * This runs game updates
    */
   gameLoop.onUpdate = ((gameLoop) {
+
     time_elapsed = gameLoop.gameTime.round();
-    Mouse mouse = (gameLoop as GameLoopHtml).mouse;
+
+    query("#fps").text =  (1/gameLoop.dt).round().toString();
 
     // if mouse button is pressed down on the player base
     if (mouse.pressed(Mouse.LEFT)) { //&& (game.within_range(
         //game.player.location,
         //new Vector2(mouse.x.toDouble(), mouse.y.toDouble()),
         //(game.player.size/2).round()))) {
-      targeting = true;
+      if (game_flip_sights == true) {
+        targeting = true;
+      } else {
+        game.set_target_position(new Vector2(mouse.x.toDouble(), mouse.y.toDouble()));
+        game.fire_bullet();
+      }
     }
 
     if (mouse.isDown(Mouse.LEFT) && targeting == true) {
-      game.set_target_position(new Vector2(mouse.x.toDouble(), mouse.y.toDouble()));
+      if (game_flip_sights == true) {
+        game.set_target_position(new Vector2(mouse.x.toDouble(), mouse.y.toDouble()));
+      }
     }
 
     if (mouse.released(Mouse.LEFT) && targeting == true) {
-      targeting = false;
-      game.fire_bullet();
+      if (game_flip_sights == true) {
+        targeting = false;
+        game.fire_bullet();
+      }
     }
 
     dbg("Begin update loop: Frame: ${gameLoop.frame}, Dt: ${gameLoop.dt}, GameTime: ${gameLoop.gameTime}", LOG_DEBUG);
     game.process(gameLoop.dt);
+    if (game.player.health <= 0) {
+      gameLoop.stop();
+      window.alert("You died. Lame...");
+      return;
+    }
   });
 
 
@@ -986,7 +1091,7 @@ void main() {
     if (game.count_entities("zomball") < zomball_max_count) {
       Zomball zomball = new Zomball();
       // only add the zomball if it isn't going to be inside another
-      while (game.get_close_entity(zomball, zomball.size) != null) {
+      while (game.get_close_entity(zomball, zomball.size, 'zomball') != null) {
         dbg("Zomball ${zomball.id} position is being reset.", LOG_DEBUG);
         zomball.set_spawn();
       }
